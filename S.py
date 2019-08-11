@@ -2,18 +2,30 @@ import tweepy
 import json
 import re
 from nltk.corpus import stopwords
-from nltk.tokenize import word_tokenize, sent_tokenize
-from string import punctuation
+from nltk.tokenize import word_tokenize
+from nltk.stem import RSLPStemmer
 
 
 class Tweet:
-  def __init__(self, date, user, retweet, hashtags, text, words):
-    self.date = date
-    self.user = user
-    self.retweet = retweet
-    self.hashtags = hashtags
-    self.text = text
-    self.words = words
+    def __init__(self, date, user, retweet, hashtags, text, words):
+        self.date = date
+        self.user = user
+        self.retweet = retweet
+        self.hashtags = hashtags
+        self.text = text
+        self.words = words
+
+    def printTweet(self):
+        print("\n\n",80*"#","\n")
+        print("DATA    : " + self.date)
+        print("USERNAME: " + self.user)
+        print("RETWEET?  " + str(self.retweet))
+        print("HASHTAGS: ", end='')
+        print(self.hashtags)
+        print("TEXT:     " + self.text)
+        print("STEMS:    ", end='')
+        print(self.words)
+
 
 ################################################################################
 #MAIN
@@ -36,11 +48,13 @@ auth.set_access_token(access_token, access_secret)
 api = tweepy.API(auth)
 
 #get stopwords from nltk
-stopwords = set(stopwords.words('portuguese') + list(punctuation))
+stopwords = set(stopwords.words('portuguese'))
+stemmer = RSLPStemmer()
+
+#start_date = datetime.datetime(2018, 1, 19, 00, 00, 00)
 
 #iterate over the tweets
-for tweet in tweepy.Cursor(api.search, q="#vazajato", rpp=100 , lang="pt" , tweet_mode="extended").items(10):
-
+for tweet in tweepy.Cursor(api.search , q="#vazajato" , rpp=100, lang="pt" , tweet_mode="extended").items(100):
     if "retweeted_status" in tweet._json:
         retweet = 1
         hashtags = tweet._json["retweeted_status"]["entities"]["hashtags"]
@@ -55,17 +69,11 @@ for tweet in tweepy.Cursor(api.search, q="#vazajato", rpp=100 , lang="pt" , twee
 
     date = tweet._json["created_at"]
     user = tweet._json["user"]["screen_name"]
-
-    #words = re.findall(r"([-'a-zA-ZÀ-ÖØ-öø-ÿ]+)|([.])",text)
-    words = word_tokenize(text)
-    words = [word for word in words if word not in stopwords]
+    words = re.findall(r"([-'a-zA-ZÀ-ÖØ-öø-ÿ]+)",text)
+    #words = word_tokenize(text)
+    words = [stemmer.stem(word) for word in words if word not in stopwords]
 
     capturedTweets.append(Tweet(date, user, retweet, hashtags, text, words))
+    capturedTweets[-1].printTweet()
 
-    print(capturedTweets[-1].date)
-    print(capturedTweets[-1].user)
-    print(capturedTweets[-1].retweet)
-    print(capturedTweets[-1].hashtags)
-    print(capturedTweets[-1].text)
-    print(capturedTweets[-1].words)
-    print("\n",80*"#","\n")
+    print(len(capturedTweets))
