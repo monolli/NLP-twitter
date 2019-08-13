@@ -1,6 +1,7 @@
 import tweepy
 import json
 import re
+import time
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from nltk.stem import RSLPStemmer
@@ -51,29 +52,42 @@ api = tweepy.API(auth)
 stopwords = set(stopwords.words('portuguese'))
 stemmer = RSLPStemmer()
 
-#start_date = datetime.datetime(2018, 1, 19, 00, 00, 00)
 
+total = 0
+c = tweepy.Cursor(api.search ,q="#lavajato" , lang="pt" ,tweet_mode="extended").items()
 #iterate over the tweets
-for tweet in tweepy.Cursor(api.search , q="#vazajato" , rpp=100, lang="pt" , tweet_mode="extended").items(100):
-    if "retweeted_status" in tweet._json:
-        retweet = 1
-        hashtags = tweet._json["retweeted_status"]["entities"]["hashtags"]
-        #remove mentions and hashtags
-        text = re.sub(r"([^\s]+:\/\/[^\s]+)|(@[^\s]+)|(#[^\s]+)", "", tweet._json["retweeted_status"]["full_text"].lower(), flags=re.MULTILINE)
+while True:
+    total += 1
+    try:
+        tweet = c.next()
+        if "retweeted_status" in tweet._json:
+            retweet = 1
+            hashtags = tweet._json["retweeted_status"]["entities"]["hashtags"]
+            #remove mentions and hashtags
+            text = re.sub(r"([^\s]+:\/\/[^\s]+)|(@[^\s]+)|(#[^\s]+)|(\n)", "", tweet._json["retweeted_status"]["full_text"].lower(), flags=re.MULTILINE)
+        else:
+            retweet = 0
+            hashtags = hashtags = tweet._json["entities"]["hashtags"]
+            #remove mentions and hashtags
+            text = re.sub(r"([^\s]+:\/\/[^\s]+)|(@[^\s]+)|(#[^\s]+)|(\n)", "", tweet._json["full_text"].lower(), flags=re.MULTILINE)
 
-    else:
-        retweet = 0
-        hashtags = hashtags = tweet._json["entities"]["hashtags"]
-        #remove mentions and hashtags
-        text = re.sub(r"([^\s]+:\/\/[^\s]+)|(@[^\s]+)|(#[^\s]+)", "", tweet._json["full_text"].lower(), flags=re.MULTILINE)
+        date = tweet._json["created_at"]
+        user = tweet._json["user"]["screen_name"]
+        words = re.findall(r"([-'a-zA-ZÀ-ÖØ-öø-ÿ]+)",text)
+        words = [stemmer.stem(word) for word in words if word not in stopwords]
 
-    date = tweet._json["created_at"]
-    user = tweet._json["user"]["screen_name"]
-    words = re.findall(r"([-'a-zA-ZÀ-ÖØ-öø-ÿ]+)",text)
-    #words = word_tokenize(text)
-    words = [stemmer.stem(word) for word in words if word not in stopwords]
+        capturedTweets.append(Tweet(date, user, retweet, hashtags, text, words))
+        capturedTweets[-1].printTweet()
+        print(total)
 
-    capturedTweets.append(Tweet(date, user, retweet, hashtags, text, words))
-    capturedTweets[-1].printTweet()
-
-    print(len(capturedTweets))
+    except Exception as e:
+        print(str(e))
+        if capturedTweets != []:
+            print("\n\n\n\n## SAVING ##")
+            with open("twitter_lava.data","a") as f:
+                for twt in capturedTweets:
+                    f.write(twt.date.rstrip() + "\t-\t" + twt.text.rstrip() + "\t\n")
+            capturedTweets = []
+        print("## WAITING FOR 5 MINUTES ##\n\n\n\n")
+        time.sleep(300)
+        continue
