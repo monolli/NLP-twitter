@@ -10,11 +10,15 @@ with open(data_file,"r",encoding="utf8") as f_open:
 
 #print(keys[-2:0])
 
-new_list=[]
-for s in keys:
-    words = re.findall(r"\t[0-1]",s)
-    if len(words)>0:
-        print(s)
-        new_list.append(s)
+def extract_labeled(data):
+	new_list=[]
+	for tweet in data:
+	    words = re.findall(r"\t[0-1]",tweet)
+	    if len(words)>0:
+	        new_list.append(tweet)
 
-print(len(new_list))
+	print(len(new_list))
+	return new_list
+
+extract_labeled(data_file)
+
