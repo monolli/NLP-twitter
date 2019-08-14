@@ -4,17 +4,30 @@ import re
    Parte da extração e pré-processamento para treinamento de um Naïve Bayes.
 '''
 
-data_file = 'twitter_lava_Pedro.data'
-with open(data_file,"r",encoding="utf8") as f_open:
-    keys = f_open.read().splitlines()
+def extract_labeled(data):
+	'''Esta função realiza a extração retornando a lista de documentos
+	rotulado do total de exemplos no documento passado.'''
+	new_list=[]
+	for tweet in data:
+	    words = re.findall(r"\t[0-1]",tweet)
+	    if len(words)>0:
+	        new_list.append(tweet)
 
-#print(keys[-2:0])
+	print(f'Quantidade de exemplos rotulados:', len(new_list))
+	return new_list
 
-new_list=[]
-for s in keys:
-    words = re.findall(r"\t[0-1]",s)
-    if len(words)>0:
-        print(s)
-        new_list.append(s)
 
-print(len(new_list))
+arquivos = ['twitter_lava_joa.data','twitter_vaza_joa.data',
+'twitter_lava_Pedro.data','twitter_vaza_Pedro.data']
+
+#Adiciona-se a lista t1 a lista referente a cada um
+# dos documentos processados
+
+t1 = []
+for i in arquivos:
+	data_file = i
+	with open(data_file,"r",encoding="utf8") as f_open:
+	    keys = f_open.read().splitlines()
+	t1.append(extract_labeled(keys))
+
+
