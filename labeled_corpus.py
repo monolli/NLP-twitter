@@ -30,4 +30,18 @@ for i in arquivos:
 	    keys = f_open.read().splitlines()
 	t1.append(extract_labeled(keys))
 
+<<<<<<< HEAD
+=======
+def extract_labeled(data):
+	new_list=[]
+	for tweet in data:
+	    words = re.findall(r"\t[0-1]",tweet)
+	    if len(words)>0:
+	        new_list.append(tweet)
+
+	print(len(new_list))
+	return new_list
+
+extract_labeled(data_file)
+>>>>>>> e4d2e1ff283d3c1153ced04f41bd32632d185c37
 
