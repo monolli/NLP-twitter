@@ -1,4 +1,5 @@
 import re
+from numpy import concatenate
 '''Este script foi desenvolvido para extrair os tweets já rotulados
    pelos membros do grupo.
    Parte da extração e pré-processamento para treinamento de um Naïve Bayes.
@@ -27,16 +28,11 @@ def extract_labeled(data,file):
 	print(f'Quantidade contra (0) - {c_0} e a favor (1) - {c_1}.')
 	return new_list
 
-
 arquivos = ['twitter_lava_joa.data','twitter_vaza_joa.data',
 'twitter_lava_Pedro.data','twitter_vaza_Pedro.data','twitter_lava_du.data','twitter_vaza_du.data']
 
-#Adiciona-se a lista t1 a lista referente a cada um
-# dos documentos processados
-
+#Concatenando todos os documentos e removendo duplicatas
 t1 = []
-c_0 = []
-c_1 = []
 for i in arquivos:
 	data_file = i
 	with open(data_file,"r",encoding="utf8") as f_open:
@@ -44,5 +40,11 @@ for i in arquivos:
 
 	t1.append(extract_labeled(keys,i))
 
+final_list = list(set(concatenate(t1)))
 
+no_dup = extract_labeled(final_list,'soma_de_todos')
 
+with open('corpus_treino.txt', 'w',encoding="utf-8") as f:
+    for item in no_dup:
+        f.write("%s\n" % item)
+    f.close()
