@@ -1,5 +1,6 @@
 import re
 from numpy import concatenate
+from random import randrange
 '''Este script foi desenvolvido para extrair os tweets já rotulados
    pelos membros do grupo.
    Parte da extração e pré-processamento para treinamento de um Naïve Bayes.
@@ -44,7 +45,27 @@ final_list = list(set(concatenate(t1)))
 
 no_dup = extract_labeled(final_list,'soma_de_todos')
 
-with open('corpus_treino.txt', 'w',encoding="utf-8") as f:
-    for item in no_dup:
+def train_test_split(data, split=0.70):
+    train = list()
+    train_size = split * len(data)
+    dataset_copy = list(data)
+    while len(train) < train_size:
+        index = randrange(len(dataset_copy))
+        train.append(dataset_copy.pop(index))
+    return train, dataset_copy
+
+train, teste = train_test_split(no_dup)
+
+print(len(train),len(teste))
+
+#Treino
+with open('corpus_treino_70.txt', 'w',encoding="utf-8") as f:
+    for item in train:
+        f.write("%s\n" % item)
+    f.close()
+
+#Teste
+with open('corpus_teste_30.txt', 'w',encoding="utf-8") as f:
+    for item in teste:
         f.write("%s\n" % item)
     f.close()
