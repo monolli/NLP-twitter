@@ -91,6 +91,23 @@ class NBClassifier:
         print (f' {tp}\t{fp}')
         print (f' {fn}\t{tn}')
 
+    def classify(self,testing_file):
+        testing_document = open(testing_file,'r')
+        total = 0
+        (c_1,c_0) = (0,0)
+        for line in testing_document.readlines():
+            total += 1
+            d = line.strip()
+            result = NBC.test(d)
+            print(result)
+            print ("Classe_Identificada={}:\t{}".format(result, d))
+            if result=='1':
+                c_1 += 1
+            elif result=='0':
+                c_0 += 1
+
+        print(f'Total de Tweets a favor: {c_1}\nTotal de Tweets Contra: {c_0}')
+
         
 if __name__ == '__main__':
     fileNameTrain = sys.argv[1]   # datasets/all_datasets-train.txt
@@ -98,4 +115,5 @@ if __name__ == '__main__':
 
     NBC = NBClassifier(fileNameTrain)
     NBC.train()
-    NBC.test_batch(fileNameTest)
+    #NBC.test_batch(fileNameTest)
+    NBC.classify(fileNameTest)
