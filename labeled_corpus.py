@@ -20,9 +20,6 @@ def extract_labeled(data,file):
 	        	c_1 += 1
 	        elif tweet.endswith('\t0'):
 	        	c_0 += 1
-	        #Para debugar
-	        #else:
-	        #	print(tweet[-20:])
 
 	print(f'\nQuantidade de exemplos rotulados:', len(new_list))
 	print(f'Documento: {file}')
@@ -58,14 +55,12 @@ train, teste = train_test_split(no_dup)
 
 print(len(train),len(teste))
 
-#Treino
-with open('corpus_treino_70.txt', 'w',encoding="utf-8") as f:
+with open('train_data.txt', 'w',encoding="utf-8") as f:
     for item in train:
         f.write("%s\n" % item)
     f.close()
 
-#Teste
-with open('corpus_teste_30.txt', 'w',encoding="utf-8") as f:
+with open('teste_data.txt', 'w',encoding="utf-8") as f:
     for item in teste:
         f.write("%s\n" % item)
     f.close()

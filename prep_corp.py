@@ -45,5 +45,5 @@ if __name__ == '__main__':
 	fileNameTrain = sys.argv[1]  
 	fileNameTest  = sys.argv[2]
 
-	clean(fileNameTrain,'treino70.txt')
-	clean(fileNameTest,'test30.txt')
+	clean(fileNameTrain,'train_data.txt')
+	clean(fileNameTest,'test_data.txt')
