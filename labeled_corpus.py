@@ -1,9 +1,11 @@
+import os
 import re
 from numpy import concatenate
 from random import randrange
 '''Este script foi desenvolvido para extrair os tweets já rotulados
    pelos membros do grupo.
-   Parte da extração e pré-processamento para treinamento de um Naïve Bayes.
+   Parte da extração e pré-processamento para treinamento
+    de um Naïve Bayes.
 '''
 
 def extract_labeled(data,file):
@@ -26,21 +28,27 @@ def extract_labeled(data,file):
 	print(f'Quantidade contra (0) - {c_0} e a favor (1) - {c_1}.')
 	return new_list
 
-arquivos = ['twitter_lava_joa.data','twitter_vaza_joa.data',
-'twitter_lava_Pedro.data','twitter_vaza_Pedro.data','twitter_lava_du.data','twitter_vaza_du.data']
 
-#Concatenando todos os documentos e removendo duplicatas
-t1 = []
-for i in arquivos:
-	data_file = i
-	with open(data_file,"r",encoding="utf8") as f_open:
-	    keys = f_open.read().splitlines()
+def open_files():
+	'Concatenando todos os documentos e removendo duplicatas.'
 
-	t1.append(extract_labeled(keys,i))
+	arquivos = ['twitter_lava_joa.data','twitter_vaza_joa.data',
+	'twitter_lava_Pedro.data','twitter_vaza_Pedro.data',
+	'twitter_lava_du.data','twitter_vaza_du.data']
+	t1 = []
 
-final_list = list(set(concatenate(t1)))
+	filedir = os.getcwd()
+	for arch in arquivos:
+		filee = os.path.join(filedir, arch)
+		with open(data_file,"r",encoding="utf8") as f_open:
+		    keys = f_open.read().splitlines()
 
-no_dup = extract_labeled(final_list,'soma_de_todos')
+		t1.append(extract_labeled(keys,arch))
+	
+	final_list = list(set(concatenate(t1)))
+	no_dup = extract_labeled(final_list,'soma_de_todos')
+
+	#What to return?
 
 def train_test_split(data, split=0.70):
     train = list()
@@ -64,3 +72,6 @@ with open('teste_data.txt', 'w',encoding="utf-8") as f:
     for item in teste:
         f.write("%s\n" % item)
     f.close()
+
+if __name__ == '__main__':
+	## what order to call functions?
